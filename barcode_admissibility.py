@@ -2,7 +2,6 @@
 Copyright (c) 2024 Mehdi Nategh
 This code is licensed under the MIT License. See the LICENSE file for details.
 
-
 (I) pModule is a dictionary where keys are d-dimensional tuples representing indices (grades) 
     z = (z_1, z_2, ... , z_d) and values are lists containing the identity matrix of dimension dim(M_z) and a list of linear transformations M_z -> M_{z + (1, 0, 0 ..., 0)},
                                    M_z -> M_{z + (0, 1, 0, .., 0)},
@@ -16,7 +15,11 @@ This code is licensed under the MIT License. See the LICENSE file for details.
     Provided rank(M_z) > rank(M_{o,z}), it returns an error indicating that a major condition is not satisfied
     hence, it is unable to determine barcode admissibility of the module. 
 
-(III) There is another algotihms to detect barcode admissibility of a pmodule regardless of the condition (*).
+(III) In the case of decomposability verified with `is_barcode_admissible`, the last function    `barcode_collector` returns a dictionary 
+              `i : an array of all indices z for which the generator e_i survives up to M_z`
+ where `i=1, 2, ..., r`, `r = dim(M_O)`. 
+
+(IV) There is another algotihms to detect barcode admissibility of a pmodule regardless of the condition (*).
 """
 
 import numpy as np
@@ -81,6 +84,38 @@ def is_barcode_admissible(p_Module):
             print('The module is not barcode admissible.')
             print(f'P_S: {all_row_vectors}')
 
+
+
+# `barcodes` returns barcodes if the module's decomposability is verfied by `is_barcode_admissible`.
+
+def barcodes(pModule, d):
+    barcode_indices = {}
+    indices = np.array(list(pModule.keys()))
+    maps = pModuleMaps(pModule)
+    def upper_cone(z, Ind):
+        #Ind = np.array(list(Ind))
+        mask = np.all(Ind > z, axis=1)
+        u_cone = Ind[mask]
+        u_cone_list = [tuple(key) for key in u_cone]
+        u_cone_list.append(z)
+        return u_cone_list
+    dimension = len(pModule[tuple(np.zeros(d))][0])
+    for i in range(dimension):
+        barcode_indices[i] = []
+        for z in indices:
+            map = maps[tuple(z)]
+            if len(map) > 1 and np.any(map[:, i] != 0):
+                    barcode_indices[i].append(z)
+            elif len(map) == 1 and map[0][i] !=0:
+                    barcode_indices[i].append(z)
+            else:
+                sub_indices = upper_cone(z, indices)
+                mask = ~np.all(indices == sub_indices, axis=1)
+                indices = indices[mask]
+                
+    return barcode_indices
+
+
 # Example 0
 p_Module = {}
 p_Module.update({(0, 0): [np.eye(3,3), [np.eye(3, 3), np.eye(3, 3)]]})
@@ -93,7 +128,12 @@ p_Module.update({(1, 2): [np.eye(1,1), [np.zeros((1,1)), np.zeros((1,1))]]})
 p_Module.update({(2, 2): [np.zeros((1,1)), [np.zeros((1,1)), np.zeros((1,1))]]})
 p_Module.update({(2, 1): [np.eye(1,1), [np.zeros((1,1)), np.zeros((1,1))]]})
 
+
 is_barcode_admissible(p_Module)
+print(f'==================================')
+print(f'Barcodes:')
+print(f'{barcode_collector(p_Module, 2)}')
+
 
 """
 #Example 1
