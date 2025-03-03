@@ -1,5 +1,6 @@
 # Barcode-Admissible-MPM
 # pModule Barcode Admissibility Checker
+# barcodes collector
 
 This project provides algorithms to handle pModules, focusing on verifying barcode admissibility.
 
@@ -22,7 +23,9 @@ This code is licensed under the MIT License. See the LICENSE file for details.
 
 ### Functionality
 1. **Mapping Generation**: The function `pModuleMaps()` creates a dictionary where keys are d-dimensional indices and values are matrices `M_{O, z}`.
-2. **Barcode Admissibility Check**: The function `is_barcode_admissible()` checks whether a pModule is barcode admissible based on linear independence of row vectors.
+2. **Barcode Admissibility Check**: The function `is_barcode_admissible()` checks whether a pModule is barcode admissible based on the linear independence of row vectors.
+3. **Barcodes Collector**: The function `barcodes` generators a dictionary with keys ranging over `1, 2, .., r` where `r = dim(M_O)` and the values are sets of indices `z` 
+                           such that the `i`-th generator survives up to `M_z`, provided the decomposability of   M` is verified by `is_barcode_admissible` function.
 
 ### Conditions
 - The algorithms work for pModules whose generators are in `M_O`, satisfying the condition:
