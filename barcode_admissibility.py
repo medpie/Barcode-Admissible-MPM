@@ -1,7 +1,4 @@
 """
-Copyright (c) 2024 Mehdi Nategh
-This code is licensed under the MIT License. See the LICENSE file for details.
-
 (I) pModule is a dictionary where keys are d-dimensional tuples representing indices (grades) 
     z = (z_1, z_2, ... , z_d) and values are lists containing the identity matrix of dimension dim(M_z) and a list of linear transformations M_z -> M_{z + (1, 0, 0 ..., 0)},
                                    M_z -> M_{z + (0, 1, 0, .., 0)},
@@ -85,20 +82,10 @@ def is_barcode_admissible(p_Module):
             print(f'P_S: {all_row_vectors}')
 
 
-
-# `barcodes` returns barcodes if the module's decomposability is verfied by `is_barcode_admissible`.
-
 def barcodes(pModule, d):
     barcode_indices = {}
     indices = np.array(list(pModule.keys()))
     maps = pModuleMaps(pModule)
-    def upper_cone(z, Ind):
-        #Ind = np.array(list(Ind))
-        mask = np.all(Ind > z, axis=1)
-        u_cone = Ind[mask]
-        u_cone_list = [tuple(key) for key in u_cone]
-        u_cone_list.append(z)
-        return u_cone_list
     dimension = len(pModule[tuple(np.zeros(d))][0])
     for i in range(dimension):
         barcode_indices[i] = []
@@ -108,12 +95,9 @@ def barcodes(pModule, d):
                     barcode_indices[i].append(z)
             elif len(map) == 1 and map[0][i] !=0:
                     barcode_indices[i].append(z)
-            else:
-                sub_indices = upper_cone(z, indices)
-                mask = ~np.all(indices == sub_indices, axis=1)
-                indices = indices[mask]
-                
+            
     return barcode_indices
+
 
 
 # Example 0
@@ -121,40 +105,12 @@ p_Module = {}
 p_Module.update({(0, 0): [np.eye(3,3), [np.eye(3, 3), np.eye(3, 3)]]})
 p_Module.update({(1, 0): [np.eye(3,3), [np.eye(1,3), np.array([[1, 0, 0], [0, 0, 1]])]]})
 p_Module.update({(2, 0): [np.eye(1,1), [np.zeros((1,1)), np.eye(1,1)]]})
-p_Module.update({(0, 1): [np.eye(3,3), [np.eye(2, 3), np.array([[1, 0, 0], [0, 0, 1]])]]})
-p_Module.update({(0, 2): [np.eye(2,2), [np.eye(1,2), np.zeros((1,2))]]})
-p_Module.update({(1, 1): [np.eye(2,2), [np.eye(1,2), np.eye(1,2)]]})
+p_Module.update({(0, 1): [np.eye(3,3), [np.array([[1, 0, 0], [0, 0, 1]]), np.array([[1, 0, 0], [0, 0, 1]])]]})
+p_Module.update({(0, 2): [np.eye(2,2), [np.array([[0, 1]]), np.zeros((1,2))]]})
+p_Module.update({(1, 1): [np.eye(2,2), [np.array([[1, 0]]), np.array([[0, 1]])]]})
 p_Module.update({(1, 2): [np.eye(1,1), [np.zeros((1,1)), np.zeros((1,1))]]})
 p_Module.update({(2, 2): [np.zeros((1,1)), [np.zeros((1,1)), np.zeros((1,1))]]})
 p_Module.update({(2, 1): [np.eye(1,1), [np.zeros((1,1)), np.zeros((1,1))]]})
 
-
 is_barcode_admissible(p_Module)
-print(f'==================================')
-print(f'Barcodes:')
-print(f'{barcode_collector(p_Module, 2)}')
-
-
-"""
-#Example 1
-p_Module = {}
-p_Module.update({(0, 0): [np.eye(3,3), [np.eye(2, 3), np.eye(2, 3)]]})
-p_Module.update({(0, 1): [np.eye(2,2), [np.eye(1, 2), np.eye(2, 2)]]})
-p_Module.update({(1, 0): [np.eye(2,2), [np.eye(2, 2), np.eye(1, 2)]]})
-p_Module.update({(1, 1): [np.eye(1,1), [np.eye(1, 1), np.eye(1, 1)]]})
-
-
-#Example 2 -------------BAD Example -- a module that doesn't satisfy  the condition (*)
-p_Module = {}
-p_Module.update({(0,0) : [np.zeros((1,1)), [np.zeros((1,1)), np.zeros((1,1))]]})
-p_Module.update({(0, 1) : [np.zeros((1,1)), [np.zeros((1,1)), np.zeros((1,1))]]})
-p_Module.update({(0, 2): [np.eye(1,1), [np.eye(2)[1], np.eye(1, 1)]]})
-p_Module.update({(1, 0): [np.eye(1,1), [np.eye(1,1), np.eye(1,1)]]})
-p_Module.update({(1, 1): [np.eye(1,1), [np.eye(3,1), np.eye(2, 1)]]})
-p_Module.update({(1, 2): [np.eye(2,2), [np.eye(2,2), np.eye(2, 2)]]})
-p_Module.update({(2, 0): [np.eye(1,1), [np.eye(1,1), np.eye(3, 1)]]})
-p_Module.update({(2, 1): [np.eye(3,3), [np.eye(3,3), np.eye(2, 3)]]})
-p_Module.update({(2, 2): [np.eye(2,2), [np.eye(2,2), np.eye(2,2)]]})
-
-print(moduleMaps(pModule))
-"""
+print(barcodes(p_Module, 2))
