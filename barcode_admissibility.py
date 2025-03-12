@@ -91,11 +91,8 @@ def barcodes(pModule, d):
         barcode_indices[i] = []
         for z in indices:
             map = maps[tuple(z)]
-            if len(map) > 1 and np.any(map[:, i] != 0):
-                    barcode_indices[i].append(z)
-            elif len(map) == 1 and map[0][i] !=0:
-                    barcode_indices[i].append(z)
-            
+            if np.any(map[:, i] != 0):
+              barcode_indices[i].append(z)            
     return barcode_indices
 
 
