@@ -83,17 +83,28 @@ def is_barcode_admissible(p_Module):
 
 
 def barcodes(pModule, d):
-    barcode_indices = {}
-    indices = np.array(list(pModule.keys()))
-    maps = pModuleMaps(pModule)
     dimension = len(pModule[tuple(np.zeros(d))][0])
+    def surfing_indices(list, p):
+            maps = pModuleMaps(pModule)
+            barcode_indices = []
+            for z in list:
+                map = maps[tuple(z)]
+                if np.any(map[:, p] != 0):
+                    barcode_indices.append(z)                
+                else:
+                    mask = np.any(list < z, axis=1) & ~np.any(list <= z, axis=1)
+                    list = list[mask]
+                    surfing_indices(list, p) 
+            return barcode_indices
+    
+    barcodes = {}
+    indices = np.array(list(pModule.keys()))
     for i in range(dimension):
-        barcode_indices[i] = []
-        for z in indices:
-            map = maps[tuple(z)]
-            if np.any(map[:, i] != 0):
-              barcode_indices[i].append(z)            
-    return barcode_indices
+            result = surfing_indices(indices, i)
+            barcodes[i] = result
+            
+    return barcodes
+
 
 
 
