@@ -28,7 +28,7 @@ This code is licensed under the MIT License. See the LICENSE file for details.
                            such that the `i`-th generator survives up to `M_z`, provided the decomposability of   M` is verified by `is_barcode_admissible` function.
 
 ### Conditions
-- The algorithms work for pModules whose generators are in `M_O`, satisfying the condition:
+- The algorithms work for pModules whose generators are born at the origin, i.e., they are born in M_O`, satisfying the condition:
   - `rank(M_z) <= rank(M_{o,z})`
 - If `rank(M_z) > rank(M_{o,z})`, an error is returned indicating that a major condition is not satisfied, preventing determination of barcode admissibility.
 
